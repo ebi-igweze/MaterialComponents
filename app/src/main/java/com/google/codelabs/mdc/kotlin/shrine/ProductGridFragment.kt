@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.*
 import com.google.codelabs.mdc.kotlin.shrine.network.ProductEntry
+import com.google.codelabs.mdc.kotlin.shrine.staggeredgridlayout.StaggeredProductCardRecyclerViewAdapter
 import kotlinx.android.synthetic.main.shr_product_grid_fragment.view.*
 
 class ProductGridFragment : Fragment() {
@@ -22,8 +23,15 @@ class ProductGridFragment : Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(layout.app_bar)
         // setup recycler view
         layout.recycler_view.setHasFixedSize(true)
-        layout.recycler_view.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
-        val adapter = ProductCardRecyclerViewAdapter(ProductEntry.initProductEntryList(resources))
+        val gridLayoutManager = GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false)
+        // setup the span size for each card item
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position % 3 == 2) 2 else 1
+            }
+        }
+        layout.recycler_view.layoutManager = gridLayoutManager
+        val adapter = StaggeredProductCardRecyclerViewAdapter(ProductEntry.initProductEntryList(resources))
         layout.recycler_view.adapter = adapter
         val largePadding = resources.getDimensionPixelSize(R.dimen.shr_product_grid_spacing)
         val smallPadding = resources.getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small)
